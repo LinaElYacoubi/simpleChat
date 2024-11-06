@@ -28,6 +28,11 @@ public class ChatClient extends AbstractClient
    */
   ChatIF clientUI; 
 
+  /**
+   * Client logInId
+   */
+  
+  private String logInId;
   
   //Constructors ****************************************************
   
@@ -50,6 +55,24 @@ public class ChatClient extends AbstractClient
   
   //Instance methods ************************************************
     
+  /**
+   * Getter method for logInId
+   */
+  
+  public String getLoginId() {
+	  return logInId;
+  }
+  
+  
+  /**
+   * Setter method for logInId
+   */
+  
+  public void setLogInId(String logInId) {
+	  this.logInId=logInId;
+  }
+  
+  
   /**
    * This method handles all data that comes in from the server.
    *
