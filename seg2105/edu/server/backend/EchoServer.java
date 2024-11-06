@@ -3,6 +3,8 @@ package edu.seg2105.edu.server.backend;
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
 
+import java.io.*;
+import edu.seg2105.client.common.ChatIF;
 
 import ocsf.server.*;
 
@@ -23,6 +25,14 @@ public class EchoServer extends AbstractServer
    * The default port to listen on.
    */
   final public static int DEFAULT_PORT = 5555;
+  
+  
+  /**
+   * The interface type variable.  It allows the implementation of 
+   * the display method in the client.
+   */
+  ChatIF serverUI;
+  
   
   //Constructors ****************************************************
   
@@ -137,6 +147,126 @@ public class EchoServer extends AbstractServer
 		
 		
 	}
+
+
+	public void handleMessagefromServerUI(String message) {
+		// TODO Auto-generated method stub
+		if (message.startsWith("#")) {
+			serverCommands(message);
+		}
+		
+		else {
+			sendToAllClients("SERVER MSG> "+ message);
+			serverUI.display(message);
+		}
+	}
+	
+	private void serverCommands(String command) {
+		// TODO Auto-generated method stub
+		if(command.equals("#quit")) {
+			serverUI.display("Server will shut down")
+			quit();
+		}
+		
+		else if(command.equals("#stop")) {
+			serverUI.display("Sever will stop listening !");
+				stopListening();
+			
+		}
+		
+		else if(command.equals("#close")) {
+			serverUI.display("Sever will close !");
+				try {
+					close ();
+				}
+				catch (IOException e) {
+					serverUI.display("Error closing server !");
+				}
+			
+			
+		}
+		
+		else if(command.equals("#setport")) {
+			serverUI.display("Server will set the port number !");
+			if (this.isListening()) {
+				serverUI.display("Cannot set up the port because the server is already running !");
+			}
+			
+			else {
+				String portNumber="";
+				for (int i=9; i<command.length();i++) {
+					portNumber+=command.charAt(i);
+				}
+				try {
+					setPort(Integer.parseInt(portNumber));
+					serverUI.display("Port number has been set up to "+ portNumber);
+						
+				}
+				catch(NumberFormatException nfe) {
+					serverUI.display("Invalid number");
+				}
+			
+	
+		}
+		}
+		
+		else if(command.equals("#start")) {
+			serverUI.display("Server will start listening for clients !");
+			if (isListening()) {
+				serverUI.display("Server is already listening to clients !");
+			}
+			
+			else {
+				try {
+					listen();
+					 serverUI.display("Server started listening to clients !");
+					
+				}
+				catch (IOException e) {
+					serverUI.display("Could not listen to clients ! ");
+				}
+				 
+			}
+			
+		}
+		else if(command.equals("#getport")) {
+			serverUI.display("Port number is "+ getPort());
+			
+		}
+		
+	
+
+		
+		
+	}
+	
+	/**
+	 * Terminates server
+	 */
+
+
+	private void quit() {
+		// TODO Auto-generated method stub
+		
+		try {
+			close();
+		}
+		catch(IOException e) {
+			System.exit(0);
+		}
+		
+	}
+	
+	/**
+	 * 
+	 */
+
+
+	
+
+	
+
+
 	
 }
 //End of EchoServer class

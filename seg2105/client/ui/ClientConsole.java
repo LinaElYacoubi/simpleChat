@@ -34,7 +34,7 @@ public class ClientConsole implements ChatIF
    */
   ChatClient client;
   
-  
+   
   
   /**
    * Scanner to read from the console
