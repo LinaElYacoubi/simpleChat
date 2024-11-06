@@ -186,7 +186,7 @@ public class EchoServer extends AbstractServer
 			
 		}
 		
-		else if(command.equals("#setport")) {
+		else if(command.startsWith("#setport")) {
 			serverUI.display("Server will set the port number !");
 			if (this.isListening()) {
 				serverUI.display("Cannot set up the port because the server is already running !");
@@ -233,6 +233,10 @@ public class EchoServer extends AbstractServer
 			serverUI.display("Port number is "+ getPort());
 			
 		}
+		
+		else {
+			  serverUI.display("Not a valid command !");
+		  }
 		
 	
 

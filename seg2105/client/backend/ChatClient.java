@@ -142,7 +142,7 @@ public class ChatClient extends AbstractClient
 		  
 	  }
 	  
-	  else if (command.equals("#sethost")) {
+	  else if (command.startsWith("#sethost")) {
 		  clientUI.display("Client is currently setting host name");
 		  
 			  if (this.isConnected()) {
@@ -165,7 +165,7 @@ public class ChatClient extends AbstractClient
 		 
 	  }
 	  
-	  else if (command.equals("#setport")) {
+	  else if (command.startsWith("#setport")) {
 		  clientUI.display("Client is currently setting a port !");
 		  
 		  if(this.isConnected()) {
@@ -217,20 +217,24 @@ public class ChatClient extends AbstractClient
 		  
 	  }
 	  
-	  else if (command.equals("#gethost")) {
+	  else if (command.startsWith("#gethost")) {
 		  clientUI.display("Host number is " + getHost());
 		
 	  }
 	  
-	  else if (command.equals("#getport")) {
+	  else if (command.startsWith("#getport")) {
 		  clientUI.display("The port number is "+ getPort());
 		  
+	  }
+	  else {
+		  clientUI.display("Not a valid command !");
 	  }
 	  
   }
   
+  
   /**
-   * This method terminates the client.
+   * Terminates the client.
    */
   public void quit()
   {
@@ -270,6 +274,23 @@ public class ChatClient extends AbstractClient
   protected void connectionClosed() {
 	  clientUI.display("Connection Closed to the Server.");
 	  
+  }
+  
+  /**
+   * Hook method after a connection has been established 
+   */
+  
+  protected void connectionEstablished() {
+	  try {
+		  sendToServer("#login" + logInId);
+		  clientUI.display(logInId+ "has logged on !");
+		  clientUI.display("You can now start chatting");
+		  
+	  }
+	  
+	  catch (IOException e){
+		  clientUI.display("ERROR getting the client LogIn !");
+	  }
   }
 }
 //End of ChatClient class
