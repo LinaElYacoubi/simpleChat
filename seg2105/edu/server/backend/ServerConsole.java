@@ -20,8 +20,9 @@ public class ServerConsole implements ChatIF{
 	Scanner fromConsole;
 	
 	
+	//Constructor
 	public ServerConsole(int port) {
-		server= new EchoServer(port);
+		server= new EchoServer(port,this);
 		
 		fromConsole= new Scanner (System.in);
 	}
@@ -80,7 +81,7 @@ public class ServerConsole implements ChatIF{
 			sv.server.listen();
 		}
 		catch (Exception e) {
-			System.out.println("Could not listen for clients !");
+			System.out.println("ERROR - Could not listen for clients !");
 		}
 		sv.accept();
 	}

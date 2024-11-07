@@ -50,18 +50,22 @@ public class ClientConsole implements ChatIF
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
+  public ClientConsole(String host, int port, String logInId) 
   {
     try 
     {
       client= new ChatClient(host, port, this);
-      
+      if(logInId == "") {
+    	  client.quit();
+      }
+      else {
+    	  client.setLogInId(logInId);
+      }
       
     } 
     catch(IOException exception) 
     {
-      System.out.println("Error: Can't setup connection!"
-                + " Terminating client.");
+      System.out.println("ERROR - Can't setup connection! Terminating client.");
       System.exit(1);
     }
     
@@ -118,26 +122,37 @@ public class ClientConsole implements ChatIF
    */
   public static void main(String[] args) 
   {
+	  
+	String logInId= "";
     String host = "";
-    int port= 0;
+    int port = 0;
 
 
-    try
-    {
-      host = args[0];
-      port=Integer.parseInt(args[1]);
-    }
-    catch(ArrayIndexOutOfBoundsException e)
-    {
-      host = "localhost";
-      port= 5555;
-    }
+    try {
     
-    catch(NumberFormatException no) {
-    	port= 5555;
-    }
-    ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
-    chat.accept();  //Wait for console data
+    	logInId = args[0];
+        host = args[1];
+        port = Integer.parseInt(args[2]);
+      }
+      catch(ArrayIndexOutOfBoundsException e)
+      {
+      	if (args.length >= 1) {
+      		host = "localhost";
+      		port = 5555;
+      	}
+      	else {
+          	System.out.println("MUST HAVE A LOGIN ID. Connection aborted");
+      	}
+      	}
+      
+      catch(NumberFormatException nfe) {
+    	  port= 5555;
+      }
+      
+      
+    ClientConsole chat= new ClientConsole(host, port, logInId);
+    chat.accept();  
+
   }
-}
+  }
 //End of ConsoleChat class

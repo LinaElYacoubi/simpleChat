@@ -110,7 +110,9 @@ public class ChatClient extends AbstractClient
     }
   }
   
-  
+  /**
+   * Method responsible of handling commands specified by the user
+   */
   
   private void clientCommands(String command) {
 	  
@@ -124,7 +126,7 @@ public class ChatClient extends AbstractClient
 		  clientUI.display("Client will log off !");
 		  try {
 			  if (!this.isConnected()) {
-				  clientUI.display("Client already logged off !");
+				  clientUI.display("Client has already logged off !");
 				  
 			  }
 			  
@@ -146,7 +148,7 @@ public class ChatClient extends AbstractClient
 		  clientUI.display("Client is currently setting host name");
 		  
 			  if (this.isConnected()) {
-				  clientUI.display("Cannot change host name because the Clietn is currently connected !");
+				  clientUI.display("Cannot change host name because the Client is currently connected !");
 				  
 			  }
 			  
@@ -175,7 +177,7 @@ public class ChatClient extends AbstractClient
 		  else {
 			  String portNumber=""; // i=9 because #setPort plus space make it 9
 			  
-			  for (int i=0;i<command.length();i++) {
+			  for (int i=9;i<command.length();i++) {
 				  portNumber+= command.charAt(i);
 			  }
 			  
@@ -197,13 +199,13 @@ public class ChatClient extends AbstractClient
 		  
 	  }
 	  
-	  else if (command.equals("#login")) {
+	  else if (command.startsWith("#login")) {
 		  clientUI.display("Client will log in");
 		  try {
 			  
 			  if(this.isConnected()) {
 				  clientUI.display("Client is already logged in !");
-				  
+				  sendToServer(command);	  
 			  }
 			  
 			  else {
@@ -277,20 +279,25 @@ public class ChatClient extends AbstractClient
   }
   
   /**
-   * Hook method after a connection has been established 
-   */
+	 * Hook method called after a connection has been established. The default
+	 * implementation does nothing. It may be overridden by subclasses to do
+	 * anything they wish.
+	 */
   
   protected void connectionEstablished() {
 	  try {
-		  sendToServer("#login" + logInId);
-		  clientUI.display(logInId+ "has logged on !");
-		  clientUI.display("You can now start chatting");
-		  
+
+		  sendToServer("#login " + logInId);
+		  clientUI.display(logInId + " has logged on ! ");		  
 	  }
 	  
 	  catch (IOException e){
-		  clientUI.display("ERROR getting the client LogIn !");
+		  clientUI.display("ERROR getting the client login!");
 	  }
   }
+  
+  
+	
+	
 }
 //End of ChatClient class

@@ -26,12 +26,20 @@ public class EchoServer extends AbstractServer
    */
   final public static int DEFAULT_PORT = 5555;
   
+ /**
+  * logInId saved so the server can always identify the client.
+  */
+ 
+  final private String key="logInId";
+  
   
   /**
    * The interface type variable.  It allows the implementation of 
-   * the display method in the client.
+   * the display method in the server.
    */
   ChatIF serverUI;
+  
+ 
   
   
   //Constructors ****************************************************
@@ -41,9 +49,10 @@ public class EchoServer extends AbstractServer
    *
    * @param port The port number to connect on.
    */
-  public EchoServer(int port) 
+  public EchoServer(int port,ChatIF serverUI) 
   {
     super(port);
+    this.serverUI=serverUI;
   }
 
   
@@ -58,67 +67,33 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
-  }
-    
-  /**
-   * This method overrides the one in the superclass.  Called
-   * when the server starts listening for connections.
-   */
-  protected void serverStarted()
-  {
-    System.out.println
-      ("Server listening for connections on port " + getPort());
-  }
-  
-  /**
-   * This method overrides the one in the superclass.  Called
-   * when the server stops listening for connections.
-   */
-  protected void serverStopped()
-  {
-    System.out.println
-      ("Server has stopped listening for connections.");
-  }
-  
-  
-  //Class methods ***************************************************
-  
-  /**
-   * This method is responsible for the creation of 
-   * the server instance (there is no UI in this phase).
-   *
-   * @param args[0] The port number to listen on.  Defaults to 5555 
-   *          if no argument is entered.
-   */
-  public static void main(String[] args) 
-  {
-    int port = 0; //Port to listen on
-
-    try
-    {
-      port = Integer.parseInt(args[0]); //Get port from command line
-    }
-    catch(Throwable t)
-    {
-      port = 5555; //Set port to 5555
-    }
+	String message= (String) msg;
 	
-    EchoServer sv = new EchoServer(port);
+	if(!message.startsWith("#")) {
+		String name= (String) client.getInfo(key);
+		this.sendToAllClients(name + ">" + msg);
+		System.out.println("Message received: " + msg + " from " + name ); // message prefixed by the logInId
+		
+	}
+	else if (message.startsWith("#login ")){
+		String username = message.substring(7);
+		client.setInfo(key, username);
+		System.out.println("Message received: #login " + username + " from null.");
+		System.out.println(username + " has logged on !");
+		
+	}
+	
+	
+		
+	}
     
-    try 
-    {
-      sv.listen(); //Start listening for connections
-    } 
-    catch (Exception ex) 
-    {
-      System.out.println("ERROR - Could not listen for clients!");
-     
-    }
-  }
+ 
   
+	
+	
+//Class methods ***************************************************
   
+ 
   
   
   /**
@@ -129,7 +104,7 @@ public class EchoServer extends AbstractServer
   
   @Override
 	protected void clientConnected(ConnectionToClient client) {
-	  System.out.println("A client has just connected !");
+	  serverUI.display("A client has just connected !");
   }
 
 	/**
@@ -143,10 +118,32 @@ public class EchoServer extends AbstractServer
 	@Override
 	synchronized protected void clientDisconnected(
 		ConnectionToClient client) {
-		System.out.println("A client has just disconnected !");
+		String username=(String) client.getInfo(key);
+		serverUI.display(username+ " has just disconnected !");
 		
 		
 	}
+	
+	
+	/**
+	   * This method overrides the one in the superclass.  Called
+	   * when the server starts listening for connections.
+	   */
+	  protected void serverStarted()
+	  {
+	    serverUI.display("Server listening for connections on port " + getPort());
+	  }
+	  
+	  /**
+	   * This method overrides the one in the superclass.  Called
+	   * when the server stops listening for connections.
+	   */
+	  protected void serverStopped()
+	  {
+		  serverUI.display("Server has stopped listening for connections.");
+	  }
+	  
+	  
 
 
 	public void handleMessagefromServerUI(String message) {
@@ -156,7 +153,7 @@ public class EchoServer extends AbstractServer
 		}
 		
 		else {
-			sendToAllClients("SERVER MSG> "+ message);
+			sendToAllClients("SERVER MESSAGE> "+ message);
 			serverUI.display(message);
 		}
 	}
@@ -164,7 +161,7 @@ public class EchoServer extends AbstractServer
 	private void serverCommands(String command) {
 		// TODO Auto-generated method stub
 		if(command.equals("#quit")) {
-			serverUI.display("Server will shut down")
+             serverUI.display("Sever will shut down !");
 			quit();
 		}
 		
@@ -229,6 +226,8 @@ public class EchoServer extends AbstractServer
 			}
 			
 		}
+		
+		
 		else if(command.equals("#getport")) {
 			serverUI.display("Port number is "+ getPort());
 			
@@ -237,9 +236,6 @@ public class EchoServer extends AbstractServer
 		else {
 			  serverUI.display("Not a valid command !");
 		  }
-		
-	
-
 		
 		
 	}
@@ -261,9 +257,7 @@ public class EchoServer extends AbstractServer
 		
 	}
 	
-	/**
-	 * 
-	 */
+	
 
 
 	
